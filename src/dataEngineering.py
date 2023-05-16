@@ -27,7 +27,7 @@ def batch_to_csv(api_cnx, queries=[""], path="data", batch=10):
         batch_size = len(temp_df)
 
         print(
-            f" {datetime.now().strftime('%m-%d%-%Y %H:%M:%S')} - [{counter}/{len(queries)}]..... batch size: {batch_size}..... key: {search_key} ")
+            f" {datetime.now().strftime('%m-%d-%Y %H:%M:%S')} - [{counter}/{len(queries)}]..... batch size: {batch_size}..... key: {search_key} ")
 
         temp_df.to_csv(
             f'{path}/raw_tweets_{search_key}_s{batch_size}_dt{date_time}.csv', index=False)
