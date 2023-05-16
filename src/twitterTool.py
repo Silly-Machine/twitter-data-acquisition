@@ -1,4 +1,5 @@
 import tweepy
+import time
 
 
 class tools:
@@ -23,8 +24,11 @@ class tools:
 
     def get_tweets(self, query="", retweets=False, lang="pt-br", tweet_mode="extended", count=10):
         query = query if retweets else query + " -filter:retweets"
-        return self.api.search_tweets(q=query, count=count, lang=lang, tweet_mode=tweet_mode,)
-
+        try:
+            return self.api.search_tweets(q=query, count=count, lang=lang, tweet_mode=tweet_mode,)
+        except Exception as e:
+            return e.message
+          
     def get_user_timeline(self, screen_name, count=10):
         return self.api.user_timeline(screen_name=screen_name, count=count)
 
