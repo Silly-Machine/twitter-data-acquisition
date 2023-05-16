@@ -16,9 +16,9 @@ class tools:
             auth = tweepy.OAuthHandler(self.consumer_key, self.consumer_secret)
             auth.set_access_token(self.access_token, self.access_token_secret)
             return auth
-        except Exception as e:
-            return e.message
-            
+        except tweepy.TweepyException as e:
+            print(str(e))
+
     def connect(self):
         return tweepy.API(self.auth, wait_on_rate_limit=True)
 
@@ -26,9 +26,9 @@ class tools:
         query = query if retweets else query + " -filter:retweets"
         try:
             return self.api.search_tweets(q=query, count=count, lang=lang, tweet_mode=tweet_mode,)
-        except Exception as e:
-            return e.message
-          
+        except tweepy.TweepyException as e:
+            print(str(e))
+
     def get_user_timeline(self, screen_name, count=10):
         return self.api.user_timeline(screen_name=screen_name, count=count)
 
