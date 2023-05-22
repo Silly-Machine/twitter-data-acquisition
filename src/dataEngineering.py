@@ -2,6 +2,11 @@ from datetime import datetime
 import pandas as pd
 import glob
 import json
+import os
+
+
+def load_dataframes(path_class="data/raw/"):
+    return pd.concat(map(pd.read_csv, glob.glob(f'{path_class}*.csv')))
 
 
 def to_pandas(raw_json):
@@ -14,7 +19,7 @@ def to_pandas(raw_json):
     return pd.DataFrame(teweets_list)
 
 
-def batch_to_csv(api_cnx, queries=[""], path="data", batch=10, loop=False):
+def batch_to_csv(api_cnx, queries=[""], path="data/raw/", batch=10, loop=False):
 
     if loop == True:
         cycle = 0
@@ -28,6 +33,7 @@ def batch_to_csv(api_cnx, queries=[""], path="data", batch=10, loop=False):
                 temp_df = to_pandas(temp_json)
 
                 search_key = 'notheme' if query == '' else query
+                file_name = '_'.join(search_key.split(' '))
                 date_time = datetime.now().strftime("%m%d%Y%H%M%S")
                 batch_size = len(temp_df)
 
@@ -35,7 +41,7 @@ def batch_to_csv(api_cnx, queries=[""], path="data", batch=10, loop=False):
                     f" loop :{loop} - {datetime.now().strftime('%m-%d-%Y %H:%M:%S')} - [{cycle}/{counter}/{len(queries)}]..... batch size: {batch_size}..... key: {search_key} ")
 
                 temp_df.to_csv(
-                    f'{path}/raw_tweets_{search_key}_s{batch_size}_dt{date_time}.csv', index=False)
+                    f'{path}/raw_tweets_{file_name}_s{batch_size}_dt{date_time}.csv', index=False)
     else:
         counter = 0
         for query in queries:
@@ -45,6 +51,7 @@ def batch_to_csv(api_cnx, queries=[""], path="data", batch=10, loop=False):
             temp_df = to_pandas(temp_json)
 
             search_key = 'notheme' if query == '' else query
+            file_name = '_'.join(search_key.split(" "))
             date_time = datetime.now().strftime("%m%d%Y%H%M%S")
             batch_size = len(temp_df)
 
@@ -52,8 +59,20 @@ def batch_to_csv(api_cnx, queries=[""], path="data", batch=10, loop=False):
                 f" loop :{loop} - {datetime.now().strftime('%m-%d-%Y %H:%M:%S')} - [{counter}/{len(queries)}]..... batch size: {batch_size}..... key: {search_key} ")
 
             temp_df.to_csv(
-                f'{path}/raw_tweets_{search_key}_s{batch_size}_dt{date_time}.csv', index=False)
+                f'{path}/raw_tweets_{file_name}_s{batch_size}_dt{date_time}.csv', index=False)
 
 
-def load_dataframes(path_class="data/raw_tweets"):
-    return pd.concat(map(pd.read_csv, glob.glob(f'{path_class}*.csv')))
+def load_expressions(path='data/ref/', key_name="expressions"):
+    word_list = []
+
+    for filename in os.listdir(path):
+        file_path = os.path.join(path, filename)
+
+        if filename.endswith('.json'):
+            with open(file_path) as file:
+                data = json.load(file)
+
+                if key_name in data:
+                    word_list.extend(data[key_name])
+
+    return word_list
